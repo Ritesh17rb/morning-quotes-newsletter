@@ -35,3 +35,4 @@ jobs:
           git add data/quotes-history.json
           git diff --cached --quiet || git commit -m "chore: record quote for $(date -u +%F)"
           git push
+
