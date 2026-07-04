@@ -55,17 +55,34 @@
   }
   .subscribe h2 { font-weight: normal; font-size: 20px; margin-bottom: 8px; }
   .subscribe p { color: var(--muted); font-size: 15px; margin-bottom: 22px; }
+  .subscribe form {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  }
+  .subscribe input[type="email"] {
+    flex: 1 1 220px; max-width: 320px;
+    font-family: Georgia, serif; font-size: 16px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 12px 20px;
+    outline: none;
+  }
+  .subscribe input[type="email"]:focus { border-color: var(--accent); }
   .btn {
     display: inline-block;
     background: var(--ink); color: var(--bg);
-    text-decoration: none;
+    border: none; cursor: pointer;
     font-family: Helvetica, Arial, sans-serif;
     font-size: 14px; letter-spacing: 1px;
-    padding: 13px 34px; border-radius: 999px;
+    padding: 13px 30px; border-radius: 999px;
     transition: opacity .15s;
   }
   .btn:hover { opacity: .82; }
+  .btn:disabled { opacity: .5; cursor: default; }
   .subscribe small { display: block; margin-top: 16px; color: var(--faint); font-size: 12.5px; }
+  .subscribe .status { margin: 14px 0 0; font-style: italic; font-size: 15px; }
+  .subscribe .status.ok { color: #6d8a5c; }
+  .subscribe .status.err { color: #a5654f; }
 
   .archive-title {
     text-align: center;
@@ -110,8 +127,12 @@
   <section class="subscribe">
     <h2>Join the morning ritual</h2>
     <p>Free, calm, and one click to leave. No noise — just the quote.</p>
-    <a class="btn" href="mailto:ritesh17lifeamazing@gmail.com?subject=Subscribe%20me%20to%20Morning%20Quotes&body=Hi!%20Please%20add%20this%20email%20to%20the%20Morning%20Quotes%20newsletter.">Subscribe by email</a>
-    <small>Sends us a short email — we'll add you within a day. ☕</small>
+    <form id="subscribe-form">
+      <input type="email" name="email" placeholder="you@example.com" required autocomplete="email" />
+      <button class="btn" type="submit">Subscribe</button>
+    </form>
+    <p class="status" id="subscribe-status" hidden></p>
+    <small>We'll add you within a day — then the quotes find you at sunrise. ☕</small>
   </section>
 
   <h2 class="archive-title">The mornings so far</h2>
@@ -124,6 +145,39 @@
 </main>
 
 <script>
+  // Subscribe form — relays the signup to our inbox via FormSubmit (free, no backend).
+  const form = document.getElementById("subscribe-form");
+  const status = document.getElementById("subscribe-status");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    const btn = form.querySelector("button");
+    btn.disabled = true;
+    status.hidden = false;
+    status.className = "status";
+    status.textContent = "Adding you to the morning list…";
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/ritesh17lifeamazing@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          email,
+          _subject: "New Morning Quotes subscriber",
+          message: `Please subscribe ${email} to Morning Quotes.`,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      status.className = "status ok";
+      status.textContent = "You're on the list! Your first quote arrives with the next sunrise. 🌅";
+      form.reset();
+    } catch {
+      status.className = "status err";
+      status.textContent =
+        "Hmm, that didn't go through — please email ritesh17lifeamazing@gmail.com and we'll add you.";
+      btn.disabled = false;
+    }
+  });
+
   const ARCHIVE_URL =
     "https://raw.githubusercontent.com/Ritesh17rb/morning-quotes-newsletter/master/data/quotes-history.json";
 
