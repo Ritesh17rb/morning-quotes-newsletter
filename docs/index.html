@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Morning Quotes — one beautiful thought, every morning</title>
+<meta name="description" content="A tiny daily newsletter. One original, gently wise quote in your inbox every morning." />
+<style>
+  :root {
+    --bg: #f5f1ea;
+    --card: #fffdf9;
+    --border: #e8e0d3;
+    --ink: #3d3428;
+    --muted: #8a7c68;
+    --faint: #b5a894;
+    --accent: #c9a96a;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 20px 80px;
+    min-height: 100vh;
+  }
+  main { width: 100%; max-width: 620px; }
+
+  .masthead { text-align: center; margin-bottom: 56px; }
+  .masthead .mark {
+    font-size: 13px; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--faint);
+  }
+  .masthead h1 {
+    font-size: clamp(34px, 6vw, 48px);
+    font-weight: normal;
+    margin: 18px 0 14px;
+  }
+  .masthead p {
+    color: var(--muted); font-style: italic; font-size: 17px;
+    max-width: 44ch; margin: 0 auto;
+  }
+
+  .subscribe {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(90,74,50,.06);
+    padding: 36px 32px;
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .subscribe h2 { font-weight: normal; font-size: 20px; margin-bottom: 8px; }
+  .subscribe p { color: var(--muted); font-size: 15px; margin-bottom: 22px; }
+  .btn {
+    display: inline-block;
+    background: var(--ink); color: var(--bg);
+    text-decoration: none;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px; letter-spacing: 1px;
+    padding: 13px 34px; border-radius: 999px;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .82; }
+  .subscribe small { display: block; margin-top: 16px; color: var(--faint); font-size: 12.5px; }
+
+  .archive-title {
+    text-align: center;
+    font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 34px;
+  }
+  .quote-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(90,74,50,.06);
+    padding: 42px 38px;
+    text-align: center;
+    margin-bottom: 26px;
+  }
+  .quote-card .theme {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 18px;
+  }
+  .quote-card blockquote { font-size: 21px; line-height: 1.55; }
+  .quote-card hr {
+    width: 48px; border: none; border-top: 1px solid #dccfbc;
+    margin: 24px auto;
+  }
+  .quote-card .reflection { font-style: italic; color: var(--muted); font-size: 15px; }
+  .quote-card .date { margin-top: 20px; color: var(--faint); font-size: 12.5px; }
+
+  .empty, footer { text-align: center; color: var(--faint); font-size: 13.5px; }
+  footer { margin-top: 56px; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header class="masthead">
+    <div class="mark">✳ &nbsp;Morning Quotes&nbsp; ✳</div>
+    <h1>One beautiful thought,<br/>every morning.</h1>
+    <p>A tiny newsletter. Each day at sunrise, one original, gently wise quote — written fresh, never repeated — arrives in your inbox.</p>
+  </header>
+
+  <section class="subscribe">
+    <h2>Join the morning ritual</h2>
+    <p>Free, calm, and one click to leave. No noise — just the quote.</p>
+    <a class="btn" href="mailto:ritesh17lifeamazing@gmail.com?subject=Subscribe%20me%20to%20Morning%20Quotes&body=Hi!%20Please%20add%20this%20email%20to%20the%20Morning%20Quotes%20newsletter.">Subscribe by email</a>
+    <small>Sends us a short email — we'll add you within a day. ☕</small>
+  </section>
+
+  <h2 class="archive-title">The mornings so far</h2>
+  <div id="archive"><p class="empty">Loading the archive…</p></div>
+
+  <footer>
+    Written each dawn by a small machine with good taste ·
+    <a href="https://github.com/Ritesh17rb/morning-quotes-newsletter">open source</a>
+  </footer>
+</main>
+
+<script>
+  const ARCHIVE_URL =
+    "https://raw.githubusercontent.com/Ritesh17rb/morning-quotes-newsletter/master/data/quotes-history.json";
+
+  const el = document.getElementById("archive");
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
+
+  fetch(ARCHIVE_URL)
+    .then((r) => r.json())
+    .then((quotes) => {
+      if (!quotes.length) {
+        el.innerHTML = '<p class="empty">The first quote arrives tomorrow at sunrise.</p>';
+        return;
+      }
+      el.innerHTML = quotes
+        .slice()
+        .reverse()
+        .map((q) => {
+          const date = new Date(q.date + "T00:00:00").toLocaleDateString("en-IN", {
+            weekday: "long", day: "numeric", month: "long", year: "numeric",
+          });
+          return `
+            <article class="quote-card">
+              <div class="theme">${esc(q.theme || "")}</div>
+              <blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote>
+              <hr/>
+              <p class="reflection">${esc(q.reflection || "")}</p>
+              <p class="date">${date}</p>
+            </article>`;
+        })
+        .join("");
+    })
+    .catch(() => {
+      el.innerHTML = '<p class="empty">Couldn’t load the archive right now.</p>';
+    });
+</script>
+</body>
+</html>
