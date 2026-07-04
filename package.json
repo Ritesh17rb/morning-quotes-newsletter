@@ -1,0 +1,12 @@
+{
+  "name": "morning-quotes-newsletter",
+  "version": "1.0.0",
+  "description": "A daily morning-quote newsletter: OpenAI writes the quote, Resend delivers it, GitHub Actions schedules it.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "send": "node scripts/send-quote.mjs"
+  }
+}
